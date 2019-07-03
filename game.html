@@ -2,7 +2,13 @@
 
  
 
+
+ 
+
 <title> Gaming with Ben </title>
+
+ 
+
 
  
 
@@ -10,7 +16,15 @@
 
  
 
+
+ 
+
 <canvas id="GameCanvas" width="800" height="600"></canvas>
+
+ 
+
+
+ 
 
  
 
@@ -24,7 +38,15 @@
 
  
 
+ 
+
+
+ 
+
 var canvas;
+
+ 
+
 
  
 
@@ -32,7 +54,17 @@ var canvasContext;
 
  
 
+var player1Score = 0;
+
+var player2Score = 0;
+
+
+ 
+
 var ballX = 50;
+
+ 
+
 
  
 
@@ -40,7 +72,13 @@ var ballY = 50;
 
  
 
+
+ 
+
 var ballSpeedX = 5;
+
+ 
+
 
  
 
@@ -48,7 +86,13 @@ var ballSpeedY = 4;
 
  
 
+
+ 
+
 var paddle1Y = 250;
+
+ 
+
 
  
 
@@ -56,34 +100,88 @@ var paddle2Y = 250;
 
  
 
+
+ 
+
 const PADDLE_HEIGHT = 100;
 
  
 
-const PADDLE_WIDTH = 10
+
+ 
+
+const PADDLE_WIDTH = 10;
+
+ 
+
+const WINNING_SCORE = 3;
+
+ 
+
+var showingWinScreen = false;
 
  
 
 function calculateMousePos(evt) {
 
+ 
+
             var rect = canvas.getBoundingClientRect();
+
+ 
 
             var root = document.documentElement;
 
+ 
+
             var mouseX = evt.clientX - rect.left - root.scrollLeft;
+
+ 
 
             var mouseY = evt.clientY - rect.top - root.scrollTop;
 
+ 
+
             return {
+
+ 
 
                         x: mouseX,
 
+ 
+
                         y: mouseY,
+
+ 
 
                         };
 
+ 
+
 }
 
+ 
+
+ 
+
+
+function handleMouseClick(evt) {
+
+if(showingWinScreen) {
+
+player1Score = 0;
+
+player2Score = 0;
+
+showingWinScreen = false;
+
+}
+
+ 
+
+}
+
+ 
 
  
 
@@ -91,7 +189,13 @@ window.onload = function() {
 
  
 
+
+ 
+
             canvas = document.getElementById('GameCanvas');
+
+ 
+
 
  
 
@@ -99,77 +203,171 @@ window.onload = function() {
 
  
 
+
+ 
+
             var FPS = 60;
+
+ 
+
 
  
 
             setInterval(function(){
 
+ 
+
 moveEverything();
 
+ 
+
 drawEverything();
+
+ 
 
 }, 1000/FPS);
 
  
 
+ 
+
+canvas.addEventListener("mousedown",handleMouseClick);
+
+
+ 
+
             canvas.addEventListener('mousemove', function(evt) {
+
+ 
 
                                                                                     var mousePos = calculateMousePos(evt);
 
+ 
+
                                                                                     paddle1Y = mousePos.y-(PADDLE_HEIGHT/2);
+
+ 
 
                                                                         });
 
  
 
+
+ 
+
 }
 
  
+
+
+ 
+
 
  
 
 function ballReset(){
 
-            ballSpeedX = -ballSpeedX
+ 
 
-            ballX = canvas.width/2;
+if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) {
 
-            ballsY = canvas.height/2;
+player1Score = 0;
+
+player2Score = 0;
+
+showingWinScreen = true;
 
 }
 
  
+
+ballSpeedY = 4;
+
+            ballSpeedX = -ballSpeedX
+
+ 
+
+            ballX = canvas.width/2;
+
+ 
+
+            ballsY = canvas.height/2;
+
+ 
+
+}
+
+ 
+
+
+ 
+
 
  
 
 function computerMovement(){
 
+ 
+
             var paddle2YCenter = paddle2Y + (PADDLE_HEIGHT/2);
+
+ 
 
             if(paddle2YCenter < ballY-35) {
 
+ 
+
                         paddle2Y = paddle2Y + 6;
+
+ 
 
             } else if(paddle2YCenter > ballY+35){
 
+ 
+
                         paddle2Y = paddle2Y - 6;
+
+ 
 
             }
 
-           
+ 
+
+          
+
+ 
 
 }
 
  
 
+
+ 
+
 function moveEverything() {
+
+ 
+
+if (showingWinScreen) {
+
+return;
+
+ 
+
+}
 
 computerMovement();
 
+ 
+
 ballX = ballX + ballSpeedX;
 
+ 
+
 ballY = ballY + ballSpeedY;
+
+ 
+
 
  
 
@@ -177,37 +375,84 @@ ballY = ballY + ballSpeedY;
 
  
 
+
+ 
+
                                     if (ballY > paddle1Y && ballY < paddle1Y+PADDLE_HEIGHT) {
+
+ 
+
+ 
 
  
 
                         ballSpeedX = -ballSpeedX;
 
+var deltaY = ballY - (paddle1Y+PADDLE_HEIGHT/2);
+
+ballSpeedY = deltaY * 0.35;
+
+ 
+
                                     } else {
 
-                                   
+ 
+
+                                  
+
+player2Score += 1;
 
                                                 ballReset();
 
+ 
+
+ 
+
                                     }
+
+ 
+
 
  
 
                         } else if (ballX > canvas.width  ) {
 
+ 
+
                                                                         if (ballY > paddle2Y && ballY < paddle2Y+PADDLE_HEIGHT) {
+
+ 
+
+ 
 
  
 
                         ballSpeedX = -ballSpeedX;
 
+var deltaY = ballY - (paddle2Y+PADDLE_HEIGHT/2);
+
+ballSpeedY = deltaY * 0.35;
+
+ 
+
                                     } else {
 
-                                   
+ 
+
+                                  
+
+player1Score += 1;
 
                                                 ballReset();
 
+ 
+
+ 
+
                                     }
+
+ 
+
 
  
 
@@ -215,23 +460,43 @@ ballY = ballY + ballSpeedY;
 
  
 
+
+ 
+
    if (ballY > canvas.height) {
+
+ 
+
 
  
 
                         ballSpeedY = -ballSpeedY;
 
+ 
+
 } else if (ballY < 0 ) {
+
+ 
 
 ballSpeedY = -ballSpeedY;
 
  
 
-}
 
  
 
 }
+
+ 
+
+
+ 
+
+}
+
+ 
+
+ 
 
 
  
@@ -240,35 +505,99 @@ function drawEverything() {
 
  
 
+ 
+
+ 
+
+
+ 
+
             colorRect(0,0,canvas.width,canvas.height,'black');
+
+ 
+
+ 
+
+if (showingWinScreen) {
+
+canvasContext.fillStyle="white";
+
+canvasContext.font="30px Arial";
+
+canvasContext.fillText("Click to continue", 100,100);
+
+return;
+
+ 
+
+}
+
+ 
 
                         colorRect(0,paddle1Y,PADDLE_WIDTH,PADDLE_HEIGHT,'white');
 
+ 
+
                         colorRect(canvas.width-PADDLE_WIDTH,paddle2Y,PADDLE_WIDTH,PADDLE_HEIGHT,'white');
+
+            canvasContext.fillStyle="grey";
+
+            canvasContext.font="30px Arial";
+
+ 
+
+            canvasContext.fillText(player1Score, 100,100);
+
+            canvasContext.fillText(player2Score, canvas.width - 100,100);
+
+ 
 
                         colorCircle(ballX, ballY, 10, 'white');
 
-                       
+ 
+
+                      
+
+ 
 
 }
+
+ 
+
 
  
 
 function colorCircle(centerX, centerY, radius, drawColor){
 
+ 
+
                         //draw a ball
+
+ 
 
                         canvasContext.fillStyle=drawColor;
 
+ 
+
                         canvasContext.beginPath();
+
+ 
 
                         canvasContext.arc(centerX, centerY, radius, 0, Math.PI*2, true);
 
+ 
+
                         canvasContext.fill();
+
+ 
 
 }
 
  
+
+
+ 
+
 
  
 
@@ -276,18 +605,35 @@ function colorRect(leftX, topY, width, height, drawColor) {
 
  
 
+
+ 
+
             canvasContext.fillStyle = drawColor;
+
+ 
+
 
  
 
             canvasContext.fillRect(leftX,topY,width, height);
 
+ 
+
 }
+
+ 
+
+ 
 
 
  
 
 </script>
+
+ 
+
+
+ 
 
  
 
