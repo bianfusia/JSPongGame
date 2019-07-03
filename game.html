@@ -271,9 +271,6 @@ function ballReset(){
 
 if (player1Score >= WINNING_SCORE || player2Score >= WINNING_SCORE) {
 
-player1Score = 0;
-
-player2Score = 0;
 
 showingWinScreen = true;
 
@@ -523,8 +520,17 @@ if (showingWinScreen) {
 canvasContext.fillStyle="white";
 
 canvasContext.font="30px Arial";
+	if (player1Score >= WINNING_SCORE) {
+		canvasContext.fillStyle="white";
+		canvasContext.fillText("You Won!", 250,200);
 
-canvasContext.fillText("Click to continue", 100,100);
+	} else if (player2Score >= WINNING_SCORE){
+		canvasContext.fillText("Bot Won, Shame on you!", 250,200);
+	}
+	
+	
+	canvasContext.fillText("Click to continue", 250,500);
+
 
 return;
 
